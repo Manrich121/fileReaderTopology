@@ -87,7 +87,7 @@ public class Main {
 		
 		builder.setBolt("stringToWordBolt", new StringToWordVectorBolt(FILTER_SET_SIZE, WORDS_TO_KEEP, instHeaders)).shuffleGrouping("instancebolt");
 		
-		builder.setBolt("printer", new PrinterBolt()).shuffleGrouping("stringToWordBolt");
+//		builder.setBolt("printer", new PrinterBolt()).shuffleGrouping("stringToWordBolt");
 		//Normal OzaBoost
 		
 		//NaiveBayesMultinomial

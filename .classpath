@@ -52,7 +52,7 @@
 	<classpathentry kind="lib" path="/home/manrich/vacwork/storm-0.8.2/lib/zookeeper-3.3.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/home/manrich/vacwork/storm-0.8.2/storm-0.8.2.jar"/>
-	<classpathentry kind="lib" path="/home/manrich/vacwork/moa-20120301/moa.jar"/>
+	<classpathentry kind="lib" path="/home/manrich/vacwork/moa-20120301/moa.jar" sourcepath="/home/manrich/vacwork/moa-20120301/moa.jar"/>
 	<classpathentry kind="lib" path="/home/manrich/vacwork/moa-20120301/sizeofag.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
