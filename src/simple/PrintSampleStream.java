@@ -14,7 +14,7 @@ public class PrintSampleStream {
         TopologyBuilder builder = new TopologyBuilder();
         
         builder.setSpout("spout", new FileWalkerSpout("/home/manrich/vacwork/datasets/enron_sent/"));
-        builder.setBolt("fileData", new FileReaderBolt(),2).shuffleGrouping("spout");
+        builder.setBolt("fileData", new FileReaderBolt()).shuffleGrouping("spout");
         builder.setBolt("print", new PrinterBolt()).shuffleGrouping("fileData");
                 
         Config conf = new Config();

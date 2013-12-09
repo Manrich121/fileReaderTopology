@@ -1,0 +1,61 @@
+package stringToVector;
+
+import java.util.Map;
+
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
+import backtype.storm.task.OutputCollector;
+import backtype.storm.task.TopologyContext;
+import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.topology.base.BaseRichBolt;
+import backtype.storm.tuple.Fields;
+import backtype.storm.tuple.Tuple;
+import backtype.storm.tuple.Values;
+
+/**
+ * 
+ * Bolt that collects stream tuples and turns them into an instance object
+ * so they are can be processed by weka and moa classes
+ * 
+ * @author Tony Chen 1111377
+ * @author Luke Barnett 1109967
+ * 
+ */
+public class InstanceBolt extends BaseRichBolt {
+
+	private static final long serialVersionUID = -290300387298901098L;
+	private OutputCollector _collector;
+	private final Instances INST_HEADERS;
+	
+	public InstanceBolt(Instances instHeaders){
+		INST_HEADERS = instHeaders;
+	}
+
+
+	@Override
+	public void declareOutputFields(OutputFieldsDeclarer declarer) {
+		declarer.declare(new Fields("personInstance"));
+	}
+
+	@Override
+	public void prepare(Map stormConf, TopologyContext context,
+			OutputCollector collector) {
+		_collector = collector;
+	}
+
+	@Override
+	public void execute(Tuple input) {
+		//Get the post
+		Mail newPost = (Mail)input.getValue(0);
+		//Turn it into an instance
+		Instance inst = new DenseInstance(2);
+		inst.setDataset(INST_HEADERS);
+		inst.setValue(0, newPost.getData());
+		inst.setValue(1, newPost.getLabel());
+		//emit these to a new bolt that collects instances
+		_collector.emit(new Values(inst));
+		_collector.ack(input);
+	}
+
+}

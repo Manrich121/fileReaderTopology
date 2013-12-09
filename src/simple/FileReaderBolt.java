@@ -14,6 +14,7 @@ import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
+import backtype.storm.utils.Utils;
 
 public class FileReaderBolt extends BaseRichBolt {
 	private OutputCollector _collector;
@@ -27,6 +28,7 @@ public class FileReaderBolt extends BaseRichBolt {
 	@Override
 	public void execute(Tuple input) {
 	try {
+		Utils.sleep(50);
 		String fileContent = readFile(input.getString(0));
 		int strIndex = fileContent.indexOf("X-FileName");
 		strIndex = fileContent.indexOf("\n", strIndex)+1;
