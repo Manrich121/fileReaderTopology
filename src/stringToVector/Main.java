@@ -52,8 +52,8 @@ public class Main {
 		}
 		
 		//TUNE PARAMETERS HERE
-		final int STAT_RES = 5;
-		final int FILTER_SET_SIZE = args.length * 50;//batch size is 100 posts per subreddit
+		final int STAT_RES = 1;
+		final int FILTER_SET_SIZE = 30;//batch size
 		final int WORDS_TO_KEEP = 200; //need larger word vectors for better results
 		final int RUNTIME = 1 * (60000);//change first term to number of minutes
 		
@@ -76,9 +76,9 @@ public class Main {
 		
 		BoltDeclarer instanceBolt = builder.setBolt("instancebolt", new InstanceBolt(instHeaders));
 		
-		String resultsFolder = ((Long)System.currentTimeMillis()).toString();
+		String resultsFolder = FILTER_SET_SIZE + "mails";
 		
-		//Add a spout for each sub-reddit
+		//Add a spout for each person
 		for(String person : persons){
 			resultsFolder = String.format("[%s]", person) + resultsFolder;
 			builder.setSpout("raw:" + person, new RawMailSpout(STARTPATH,person));
@@ -91,7 +91,7 @@ public class Main {
 		//Normal OzaBoost
 		
 		//NaiveBayesMultinomial
-		builder.setBolt("ozaBoostBolt:naiveBayesMultinomial", new OzaBoostBolt("bayes.NaiveBayesMultinomial")).shuffleGrouping("stringToWordBolt");
+		builder.setBolt("ozaBoostBolt:naiveBayesMultinomial", new OzaBoostBolt("bayes.NaiveBayesMultinomial")).shuffleGrouping("stringToWordBolt");		
 		builder.setBolt("statistics:naiveBayesMultinomial", new StatisticsBolt(persons.size(),STAT_RES)).shuffleGrouping("ozaBoostBolt:naiveBayesMultinomial");
 		
 		builder.setBolt("StatsPrinterBolt:naiveBayesMultinomial", new StatsPrinterBolt("naiveBayesMultinominal")).shuffleGrouping("statistics:naiveBayesMultinomial");

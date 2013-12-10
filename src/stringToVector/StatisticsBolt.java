@@ -30,10 +30,14 @@ public class StatisticsBolt extends BaseRichBolt {
 	//[1] are the predicted class counts
 	private double[][] stats;
 	
+	// Confusion Matrix
+	private int[][] conf;
+	
 	public StatisticsBolt(int numberOfClasses, int reportingFrequency){
 		REPORTING_FREQUENCY = reportingFrequency;
 		NUMBER_OF_CLASSES = numberOfClasses;
 		stats = new double[2][numberOfClasses];	
+		conf = new int[numberOfClasses][numberOfClasses];
 	}
 
 	@Override
@@ -65,6 +69,9 @@ public class StatisticsBolt extends BaseRichBolt {
 			stats[0][actual]++;
 			stats[1][pred]++;	
 			
+			//Update Confusion Matrix
+			conf[actual][pred]++;
+			
 			totalCount++;
 			collector.ack(input);
 			
@@ -85,5 +92,20 @@ public class StatisticsBolt extends BaseRichBolt {
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declare(new Fields("NumberSeen", "Accuracy","Kappa"));
 	}
+	
+	@Override
+    public void cleanup() {
+		// TODO: Confusion matrix
+		System.out.println("StatisticsBolt:Cleanup");
+		
+		for(int i=0;i<NUMBER_OF_CLASSES;i++){
+			for(int j=0;j<NUMBER_OF_CLASSES;j++){
+				System.out.print(conf[i][j]+ "\t");
+			}
+			System.out.println();
+		}
+		
+		System.out.println("Accuracy: " + (double)totalPredictedCorrectly / (double)totalCount);
+    }    
 
 }

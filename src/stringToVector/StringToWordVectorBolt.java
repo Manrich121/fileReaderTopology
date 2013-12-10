@@ -54,6 +54,9 @@ public class StringToWordVectorBolt extends BaseRichBolt{
 		semaphore = new Semaphore(1);
 		filter = new StringToWordVector(MAX_NUMBER_OF_WORDS_TO_KEEP);
 		filter.setOutputWordCounts(true);
+		filter.setLowerCaseTokens(true);
+		filter.setDoNotOperateOnPerClassBasis(true);
+		filter.setUseStoplist(true);
 	}
 
 	@Override

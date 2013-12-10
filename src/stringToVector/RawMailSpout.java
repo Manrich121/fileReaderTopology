@@ -87,7 +87,7 @@ public class RawMailSpout extends BaseRichSpout {
 	
 	private Mail getNextMail(){
 		String fileContent;
-		if(count <100){
+		if(count <curFiles.size()){
 			try {
 				fileContent = readFile(curFiles.get(count++));
 				int strIndex = fileContent.indexOf("X-FileName");
