@@ -35,7 +35,7 @@ public class InstanceBolt extends BaseRichBolt {
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("personInstance"));
+		declarer.declare(new Fields("personInstance","label"));
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class InstanceBolt extends BaseRichBolt {
 		inst.setValue(0, newPost.getData());
 		inst.setValue(1, newPost.getLabel());
 		//emit these to a new bolt that collects instances
-		_collector.emit(new Values(inst));
+		_collector.emit(new Values(inst,newPost.getLabel()));
 		_collector.ack(input);
 	}
 

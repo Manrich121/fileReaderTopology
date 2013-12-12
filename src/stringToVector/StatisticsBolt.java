@@ -33,6 +33,7 @@ public class StatisticsBolt extends BaseRichBolt {
 	// Confusion Matrix
 	private int[][] conf;
 	
+	
 	public StatisticsBolt(int numberOfClasses, int reportingFrequency){
 		REPORTING_FREQUENCY = reportingFrequency;
 		NUMBER_OF_CLASSES = numberOfClasses;
@@ -47,6 +48,8 @@ public class StatisticsBolt extends BaseRichBolt {
 
 	@Override
 	public void execute(Tuple input) {
+		String label = input.getString(2);
+		double score = 0;
 		
 		if(input.getValue(0).getClass() == double[].class){
 			double[] dist = (double[]) input.getValue(0);
@@ -59,9 +62,11 @@ public class StatisticsBolt extends BaseRichBolt {
 				if(dist[i]>max){
 					pred = i;
 					max = dist[i];
+
+					//score
+					score = dist[actual];
 				}
-			}
-			
+			}			
 			//update counted statistics
 			if(pred == actual){
 				totalPredictedCorrectly++;
@@ -75,7 +80,7 @@ public class StatisticsBolt extends BaseRichBolt {
 			totalCount++;
 			collector.ack(input);
 			
-			if(totalCount % REPORTING_FREQUENCY == 0){
+//			if(totalCount % REPORTING_FREQUENCY == 0){
 				double accuracy = (double)totalPredictedCorrectly / (double)totalCount;
 				//calculate probably of getting correct prediction by chance
 				double randomGuessAccuracy = 0;
@@ -83,14 +88,14 @@ public class StatisticsBolt extends BaseRichBolt {
 					randomGuessAccuracy += (stats[0][i]/totalCount)*(stats[1][i]/totalCount);
 				}
 				double kappa = (accuracy - randomGuessAccuracy) / (1 - randomGuessAccuracy);
-				collector.emit(new Values(totalCount,accuracy, Double.isNaN(kappa) ? 0 : kappa));
-			}
+				collector.emit(new Values(totalCount,accuracy, Double.isNaN(kappa) ? 0 : kappa, dist, label));
+//			}
 		}
 	}
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("NumberSeen", "Accuracy","Kappa"));
+		declarer.declare(new Fields("NumberSeen", "Accuracy","Kappa","didt","label"));
 	}
 	
 	@Override

@@ -61,7 +61,7 @@ public class StringToWordVectorBolt extends BaseRichBolt{
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("StringVectors"));
+		declarer.declare(new Fields("StringVectors","label"));
 		
 	}
 
@@ -75,6 +75,7 @@ public class StringToWordVectorBolt extends BaseRichBolt{
 	public void execute(Tuple input) {
 		//Get the instance
 		DenseInstance inst = (DenseInstance) input.getValue(0);
+		String label = input.getString(1);
 		INST_HEADERS = inst.dataset();
 		
 		//Retrieve the semaphore
@@ -110,7 +111,7 @@ public class StringToWordVectorBolt extends BaseRichBolt{
 					
 					//emit the instances used to train the filter
 					for(int i=0; i<filter_training_set.numInstances(); i++){
-						collector.emit(new Values(filter_training_set.get(i)));
+						collector.emit(new Values(filter_training_set.get(i),label));
 					}
 					
 					training = false;
@@ -131,7 +132,7 @@ public class StringToWordVectorBolt extends BaseRichBolt{
 			
 			Instance filteredValue;
 			while((filteredValue = filter.output()) != null){
-				collector.emit(new Values(filteredValue));
+				collector.emit(new Values(filteredValue,label));
 			}
 		}
 		

@@ -31,13 +31,17 @@ public class OzaBoostBolt extends BaseRichBolt {
 	private final OzaBoost classifier;
 	private OutputCollector collector;
 	private InstancesHeader INST_HEADERS;
+	private int MAX_LEARN_INST;
+	
+	private int count =0; 
 
 	private static final long serialVersionUID = 5699756297412652215L;
 	
-	public OzaBoostBolt(String classifierName){
+	public OzaBoostBolt(String classifierName, int maxLearnInstances){
 		classifier = new OzaBoost();
 		classifier.baseLearnerOption = new ClassOption("baseLearner", 'l',"Classifier to train.",Classifier.class, classifierName);
 		classifier.prepareForUse();
+		MAX_LEARN_INST = maxLearnInstances;
 	}
 
 	@Override
@@ -49,6 +53,7 @@ public class OzaBoostBolt extends BaseRichBolt {
 	public void execute(Tuple input) {
 		
 		Object obj = input.getValue(0);
+		String label = input.getString(1);
 		
 		//If we get the headers set them and reset
 		if(obj.getClass() == Instances.class){
@@ -58,9 +63,12 @@ public class OzaBoostBolt extends BaseRichBolt {
 		}else{
 			SparseInstance inst = (SparseInstance) obj;
 			//Emit the entire prediction array and the correct value
-			collector.emit(new Values(classifier.getVotesForInstance(inst), inst.classValue()));
+			collector.emit(new Values(classifier.getVotesForInstance(inst), inst.classValue(),label));
 			//Train on instance
-			classifier.trainOnInstanceImpl(inst);
+			if (count <MAX_LEARN_INST){
+				classifier.trainOnInstanceImpl(inst);
+				count ++;
+			}
 		}
 		
 		collector.ack(input);
@@ -68,7 +76,7 @@ public class OzaBoostBolt extends BaseRichBolt {
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("votesForInstance","actualClass"));
+		declarer.declare(new Fields("votesForInstance","actualClass","label"));
 	}
 
 }
