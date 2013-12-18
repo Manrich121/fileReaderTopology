@@ -22,7 +22,6 @@ public class StatsWriterBolt extends BaseRichBolt {
 	private String name = "";
 	private String folderName;
 	private FileWriter writer;
-	private FileWriter scoreWriter;
 	private OutputCollector collector;
 	
 	public StatsWriterBolt(String name, String folderName){
@@ -42,7 +41,8 @@ public class StatsWriterBolt extends BaseRichBolt {
 		}
 		try {
 			writer = new FileWriter(folderName == null ? String.format("%s.csv", name) : String.format("results/%s/%s.csv", folderName, name));
-			scoreWriter = new FileWriter(folderName == null ? String.format("%s_Score.csv", name) : String.format("results/%s/%s_Score.csv", folderName, name));
+			writer.write("n," + "Accuracy," + "kappa," + "Precision," + "Recall," + "F score\n");
+			writer.flush();	
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -57,30 +57,14 @@ public class StatsWriterBolt extends BaseRichBolt {
 		Long n = input.getLong(0);
 		Double a = input.getDouble(1);
 		Double k = input.getDouble(2);
-		
-		//Score
-		double[] dist = (double[]) input.getValue(3);
-		
-		String score = "";
-		
-		for (int i=0;i<dist.length;i++){
-			score += dist[i];
-			
-			if(i<dist.length-1){
-				score += ",";
-			}
-		}
-		String label = input.getString(4);
+		Double precision = input.getDouble(3);
+		Double recall = input.getDouble(4);
+		Double fscore = 2*(precision*recall)/(precision+recall);
 		
 		//Write to file
 		try {
-			writer.write(n + "," + a + "," + k + "\n");
-			writer.flush();
-			
-			//ScoreWriter
-			scoreWriter.write(n + "," + label + "," + score + "\n");
-			scoreWriter.flush();
-			
+			writer.write(n + "," + a + "," + k + "," + precision + "," + recall + "," + fscore + "\n");
+			writer.flush();			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

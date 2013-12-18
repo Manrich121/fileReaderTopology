@@ -29,6 +29,7 @@ public class StatisticsBolt extends BaseRichBolt {
 	//[0] are the actual class counts
 	//[1] are the predicted class counts
 	private double[][] stats;
+	private String falseClass;
 	
 	// Confusion Matrix
 	private int[][] conf;
@@ -39,6 +40,7 @@ public class StatisticsBolt extends BaseRichBolt {
 		NUMBER_OF_CLASSES = numberOfClasses;
 		stats = new double[2][numberOfClasses];	
 		conf = new int[numberOfClasses][numberOfClasses];
+		falseClass = "";
 	}
 
 	@Override
@@ -70,6 +72,9 @@ public class StatisticsBolt extends BaseRichBolt {
 			//update counted statistics
 			if(pred == actual){
 				totalPredictedCorrectly++;
+			}else{
+//				System.out.println(input.getString(3));
+				falseClass += input.getString(3) + "\n";
 			}
 			stats[0][actual]++;
 			stats[1][pred]++;	
@@ -88,14 +93,14 @@ public class StatisticsBolt extends BaseRichBolt {
 					randomGuessAccuracy += (stats[0][i]/totalCount)*(stats[1][i]/totalCount);
 				}
 				double kappa = (accuracy - randomGuessAccuracy) / (1 - randomGuessAccuracy);
-				collector.emit(new Values(totalCount,accuracy, Double.isNaN(kappa) ? 0 : kappa, dist, label));
+				collector.emit(new Values(totalCount,accuracy, Double.isNaN(kappa) ? 0 : kappa, precision(), recall(), label));
 //			}
 		}
 	}
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("NumberSeen", "Accuracy","Kappa","didt","label"));
+		declarer.declare(new Fields("NumberSeen", "Accuracy","Kappa","precision", "recall","label"));
 	}
 	
 	@Override
@@ -109,8 +114,53 @@ public class StatisticsBolt extends BaseRichBolt {
 			}
 			System.out.println();
 		}
+		if(conf[0].length == 2){
+			
+			
+			
+			System.out.println("\nPrecision: "+ precision());
+			System.out.println("Recall: "+ recall());
+			System.out.println("F score: "+ fscore());
+		}
 		
 		System.out.println("Accuracy: " + (double)totalPredictedCorrectly / (double)totalCount);
+//		System.out.println(falseClass);
     }    
+	
 
+	
+	double precision() {
+	double tmpPrec = 0.0;
+	
+	for(int i=0;i<NUMBER_OF_CLASSES-1;i++) { //for each class
+		double totalPos = 0.0;
+		double truePos = conf[i][i]*1.0;
+		for(int j=0;j<NUMBER_OF_CLASSES;j++){
+			totalPos += conf[i][j];
+		}
+		tmpPrec += truePos/totalPos;
+	}
+	
+	return tmpPrec/(NUMBER_OF_CLASSES-1);
+	
+	}
+	
+	double recall() {
+		double tmpRec = 0.0;
+		
+		for(int i=0;i<NUMBER_OF_CLASSES-1;i++) { //for each class
+			double totalPos = 0.0;
+			double truePos = conf[i][i]*1.0;
+			for(int j=0;j<NUMBER_OF_CLASSES;j++){
+				totalPos += conf[j][i];
+			}
+			tmpRec += truePos/totalPos;
+		}
+		
+		return tmpRec/(NUMBER_OF_CLASSES-1);
+	}
+
+	double fscore() {
+		return 2*precision()*recall()/(precision()+recall());
+	}
 }

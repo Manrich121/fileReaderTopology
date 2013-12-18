@@ -76,13 +76,15 @@ public class RawMailSpout extends BaseRichSpout {
 		//Try and get the next post
 		Mail nextMail = getNextMail();
 		//If we have gotten a post emit it
-		if(nextMail != null)
-			collector.emit(new Values(nextMail));
+		if(nextMail != null){
+			collector.emit(new Values(nextMail, curFiles.get(count-1)));
+		}
+			
 	}
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("redditPost"));
+		declarer.declare(new Fields("redditPost","filename"));
 	}
 	
 	private Mail getNextMail(){

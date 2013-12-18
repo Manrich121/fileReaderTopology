@@ -61,7 +61,7 @@ public class StringToWordVectorBolt extends BaseRichBolt{
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("StringVectors","label"));
+		declarer.declare(new Fields("StringVectors","label","filename"));
 		
 	}
 
@@ -111,7 +111,7 @@ public class StringToWordVectorBolt extends BaseRichBolt{
 					
 					//emit the instances used to train the filter
 					for(int i=0; i<filter_training_set.numInstances(); i++){
-						collector.emit(new Values(filter_training_set.get(i),label));
+						collector.emit(new Values(filter_training_set.get(i), label,input.getString(2)));
 					}
 					
 					training = false;
@@ -132,7 +132,7 @@ public class StringToWordVectorBolt extends BaseRichBolt{
 			
 			Instance filteredValue;
 			while((filteredValue = filter.output()) != null){
-				collector.emit(new Values(filteredValue,label));
+				collector.emit(new Values(filteredValue, label, input.getString(2)));
 			}
 		}
 		

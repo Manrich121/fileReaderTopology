@@ -208,8 +208,8 @@ public class Main {
 	 * Prints the required usage of the program
 	 */
 	private static void showUsage(){
-		System.out.println("Usage:");
-		System.out.println("label label [...label]");
+		System.out.println("Usage (IMPORTANT: Set Target as first label):");
+		System.out.println("Target label [...label]");
 	}
 
 }
