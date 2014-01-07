@@ -40,7 +40,7 @@ public class Main {
 			System.exit(2);
 		}
 		if(args.length < 2){
-			System.err.println("Need to provide at least two persons");
+			System.err.println("Need to provide at least a target and another person");
 			showUsage();
 			System.exit(2);
 		}
@@ -53,7 +53,7 @@ public class Main {
 		
 		//TUNE PARAMETERS HERE
 		final int STAT_RES = 1;
-		final int FILTER_SET_SIZE = 30;//batch size
+		final int FILTER_SET_SIZE = persons.size()*15;//batch size
 		final int WORDS_TO_KEEP = 200; //need larger word vectors for better results
 		final int RUNTIME = 1 * (60000);//change first term to number of minutes
 		
@@ -76,7 +76,7 @@ public class Main {
 		
 		BoltDeclarer instanceBolt = builder.setBolt("instancebolt", new InstanceBolt(instHeaders));
 		
-		String resultsFolder = FILTER_SET_SIZE + "mails";
+		String resultsFolder = FILTER_SET_SIZE/persons.size() + "mails";
 		
 		//Add a spout for each person
 		for(String person : persons){
@@ -91,19 +91,19 @@ public class Main {
 //		builder.setBolt("printer", new PrinterBolt()).shuffleGrouping("stringToWordBolt");
 		//Normal OzaBoost
 		
-		//NaiveBayesMultinomial
-		builder.setBolt("ozaBoostBolt:naiveBayesMultinomial", new OzaBoostBolt("bayes.NaiveBayesMultinomial",FILTER_SET_SIZE )).shuffleGrouping("stringToWordBolt");		
-		builder.setBolt("statistics:naiveBayesMultinomial", new StatisticsBolt(persons.size(),STAT_RES)).shuffleGrouping("ozaBoostBolt:naiveBayesMultinomial");
-		
-		builder.setBolt("StatsPrinterBolt:naiveBayesMultinomial", new StatsPrinterBolt("naiveBayesMultinominal")).shuffleGrouping("statistics:naiveBayesMultinomial");
-		builder.setBolt("StatsWriterBolt:naiveBayesMultinomial", new StatsWriterBolt("naiveBayesMultinominal", resultsFolder)).shuffleGrouping("statistics:naiveBayesMultinomial");
-		
-		//NaiveBayes
-		builder.setBolt("ozaBoostBolt:naiveBayes", new OzaBoostBolt("bayes.NaiveBayes",FILTER_SET_SIZE)).shuffleGrouping("stringToWordBolt");
-		builder.setBolt("statistics:naiveBayes", new StatisticsBolt(persons.size(),STAT_RES)).shuffleGrouping("ozaBoostBolt:naiveBayes");
-		
-		builder.setBolt("StatsPrinterBolt:naiveBayes", new StatsPrinterBolt("naiveBayes")).shuffleGrouping("statistics:naiveBayes");
-		builder.setBolt("StatsWriterBolt:naiveBayes", new StatsWriterBolt("naiveBayes", resultsFolder)).shuffleGrouping("statistics:naiveBayes");
+//		//NaiveBayesMultinomial
+//		builder.setBolt("ozaBoostBolt:naiveBayesMultinomial", new OzaBoostBolt("bayes.NaiveBayesMultinomial",FILTER_SET_SIZE )).shuffleGrouping("stringToWordBolt");		
+//		builder.setBolt("statistics:naiveBayesMultinomial", new StatisticsBolt(persons.size(),STAT_RES)).shuffleGrouping("ozaBoostBolt:naiveBayesMultinomial");
+//		
+//		builder.setBolt("StatsPrinterBolt:naiveBayesMultinomial", new StatsPrinterBolt("naiveBayesMultinominal")).shuffleGrouping("statistics:naiveBayesMultinomial");
+//		builder.setBolt("StatsWriterBolt:naiveBayesMultinomial", new StatsWriterBolt("naiveBayesMultinominal", resultsFolder)).shuffleGrouping("statistics:naiveBayesMultinomial");
+//		
+//		//NaiveBayes
+//		builder.setBolt("ozaBoostBolt:naiveBayes", new OzaBoostBolt("bayes.NaiveBayes",FILTER_SET_SIZE)).shuffleGrouping("stringToWordBolt");
+//		builder.setBolt("statistics:naiveBayes", new StatisticsBolt(persons.size(),STAT_RES)).shuffleGrouping("ozaBoostBolt:naiveBayes");
+//		
+//		builder.setBolt("StatsPrinterBolt:naiveBayes", new StatsPrinterBolt("naiveBayes")).shuffleGrouping("statistics:naiveBayes");
+//		builder.setBolt("StatsWriterBolt:naiveBayes", new StatsWriterBolt("naiveBayes", resultsFolder)).shuffleGrouping("statistics:naiveBayes");
 		
 		//Perceptron
 		builder.setBolt("ozaBoostBolt:perceptron", new OzaBoostBolt("functions.Perceptron",FILTER_SET_SIZE)).shuffleGrouping("stringToWordBolt");

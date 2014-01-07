@@ -51,7 +51,7 @@ public class StatisticsBolt extends BaseRichBolt {
 	@Override
 	public void execute(Tuple input) {
 		String label = input.getString(2);
-		double score = 0;
+		double score;
 		
 		if(input.getValue(0).getClass() == double[].class){
 			double[] dist = (double[]) input.getValue(0);
@@ -72,10 +72,11 @@ public class StatisticsBolt extends BaseRichBolt {
 			//update counted statistics
 			if(pred == actual){
 				totalPredictedCorrectly++;
-			}else{
-//				System.out.println(input.getString(3));
-				falseClass += input.getString(3) + "\n";
 			}
+//			else{
+//				System.out.println(input.getString(3));
+//				falseClass += input.getString(3) + "\n";
+//			}
 			stats[0][actual]++;
 			stats[1][pred]++;	
 			
@@ -114,14 +115,9 @@ public class StatisticsBolt extends BaseRichBolt {
 			}
 			System.out.println();
 		}
-		if(conf[0].length == 2){
-			
-			
-			
-			System.out.println("\nPrecision: "+ precision());
-			System.out.println("Recall: "+ recall());
-			System.out.println("F score: "+ fscore());
-		}
+		System.out.println("\nPrecision: "+ precision());
+		System.out.println("Recall: "+ recall());
+		System.out.println("F score: "+ fscore());
 		
 		System.out.println("Accuracy: " + (double)totalPredictedCorrectly / (double)totalCount);
 //		System.out.println(falseClass);

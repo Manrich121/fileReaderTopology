@@ -79,11 +79,11 @@ public class StringToWordVectorBolt extends BaseRichBolt{
 		INST_HEADERS = inst.dataset();
 		
 		//Retrieve the semaphore
-		try {
-			semaphore.acquire();
-		} catch (InterruptedException e2) {
-			e2.printStackTrace();
-		}
+//		try {
+//			semaphore.acquire();
+//		} catch (InterruptedException e2) {
+//			e2.printStackTrace();
+//		}
 		
 		/*
 		 * If we are training then we add it to the batch until it's full
@@ -138,7 +138,7 @@ public class StringToWordVectorBolt extends BaseRichBolt{
 		
 		//Always acknowledge the tuple we have processed so it isn't sent somewhere else
 		collector.ack(input);
-		semaphore.release();
+//		semaphore.release();
 	}
 
 }

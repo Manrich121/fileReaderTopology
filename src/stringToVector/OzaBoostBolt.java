@@ -4,12 +4,10 @@ import java.util.Map;
 
 import weka.core.Instances;
 import weka.core.SparseInstance;
-
 import moa.classifiers.Classifier;
 import moa.classifiers.meta.OzaBoost;
 import moa.core.InstancesHeader;
 import moa.options.ClassOption;
-
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -65,9 +63,13 @@ public class OzaBoostBolt extends BaseRichBolt {
 			//Emit the entire prediction array and the correct value
 			collector.emit(new Values(classifier.getVotesForInstance(inst), inst.classValue(),label,input.getString(2)));
 			//Train on instance
-			if (count <MAX_LEARN_INST){
+			if (count <MAX_LEARN_INST){			
 				classifier.trainOnInstanceImpl(inst);
 				count++;
+			}else{ // Learn on Positive classification
+				if (correctClass(classifier.getVotesForInstance(inst),inst.classValue())){
+					classifier.trainOnInstanceImpl(inst);
+				}
 			}
 		}		
 		collector.ack(input);
@@ -78,4 +80,19 @@ public class OzaBoostBolt extends BaseRichBolt {
 		declarer.declare(new Fields("votesForInstance","actualClass","label","filename"));
 	}
 
+	private boolean correctClass(double[] votesFor, Double d_actual){
+		double[] dist = (double[]) votesFor;
+		//wont cast Double objects to int, doing it the long way
+		int actual = d_actual.intValue();
+		int pred = 0;
+		double max = -1;
+		for(int i=0;i<dist.length;i++){
+			if(dist[i]>max){
+				pred = i;
+				max = dist[i];
+			}
+		}			
+		//update counted statistics
+		return pred == actual;
+	}
 }

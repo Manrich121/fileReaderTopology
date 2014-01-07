@@ -31,7 +31,7 @@ public class StatsPrinterBolt extends BaseBasicBolt {
 		Double a = tuple.getDouble(1);
 		Double k = tuple.getDouble(2);
 		//Print to standard output
-        System.out.println("[" + name + "] n:" + n + "\taccuracy:" + df.format(a) + "\tkappa:" + df.format(k) + "\t" + System.currentTimeMillis());
+        System.out.println("[" + name + "] n:" + n + "\taccuracy:" + df.format(a) + "\tkappa:" + df.format(k) + "\t" + tuple.getString(5));
         //tuples are ack in the super class so we don't need to worry about it
     }
 
