@@ -58,7 +58,7 @@ public class Main {
 		final int WORDS_TO_KEEP = 200; //need larger word vectors for better results
 		final int RUNTIME = 1 * (60000);//change first term to number of minutes
 		
-		final String STARTPATH = "/home/manrich/vacwork/datasets/enron_test/";
+		final String INPUTPATH = "/home/manrich/vacwork/datasets/enron_test/";
 		
 		//Build the Instances Header
 		ArrayList<Attribute> att = new ArrayList<Attribute>();
@@ -83,7 +83,7 @@ public class Main {
 		for(String person : persons){
 			System.out.println(person);
 			resultsFolder = String.format("[%s]", person) + resultsFolder;
-			builder.setSpout("raw:" + person, new RawMailSpout(STARTPATH,person));
+			builder.setSpout("raw:" + person, new RawMailSpout(INPUTPATH,person));
 			instanceBolt.shuffleGrouping("raw:" + person);
 		}
 		
