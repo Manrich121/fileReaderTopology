@@ -1,4 +1,4 @@
-package mailAnalyser;
+package mailAnalyserPackage;
 
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;

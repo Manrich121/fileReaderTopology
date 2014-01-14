@@ -1,4 +1,4 @@
-package mailAnalyser;
+package mailAnalyserPackage;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 
@@ -15,9 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-
-import fileWalkerCounter.FileWalkerSpout.PrintFiles;
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;

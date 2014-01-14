@@ -1,9 +1,8 @@
-package mailAnalyser;
+package mailAnalyserPackage;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import simple.PrinterBolt;
 import weka.core.Attribute;
 import weka.core.Instances;
 import backtype.storm.Config;

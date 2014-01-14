@@ -1,4 +1,4 @@
-package mailAnalyser;
+package mailAnalyserPackage;
 
 import java.io.Serializable;
 
