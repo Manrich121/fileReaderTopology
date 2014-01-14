@@ -1,4 +1,4 @@
-package stringToVector;
+package mailAnalyser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +54,7 @@ public class Main {
 		//TUNE PARAMETERS HERE
 		final int STAT_RES = 1;
 		final int FILTER_SET_SIZE = persons.size()*15;//batch size
+		final boolean ONLINE_LEARNING = true;		// sets to learn online or not (only learn on initial batch)
 		final int WORDS_TO_KEEP = 200; //need larger word vectors for better results
 		final int RUNTIME = 1 * (60000);//change first term to number of minutes
 		
@@ -91,7 +92,7 @@ public class Main {
 //		builder.setBolt("printer", new PrinterBolt()).shuffleGrouping("stringToWordBolt");
 		//Normal OzaBoost
 		
-//		//NaiveBayesMultinomial
+		//NaiveBayesMultinomial
 //		builder.setBolt("ozaBoostBolt:naiveBayesMultinomial", new OzaBoostBolt("bayes.NaiveBayesMultinomial",FILTER_SET_SIZE )).shuffleGrouping("stringToWordBolt");		
 //		builder.setBolt("statistics:naiveBayesMultinomial", new StatisticsBolt(persons.size(),STAT_RES)).shuffleGrouping("ozaBoostBolt:naiveBayesMultinomial");
 //		
@@ -106,7 +107,7 @@ public class Main {
 //		builder.setBolt("StatsWriterBolt:naiveBayes", new StatsWriterBolt("naiveBayes", resultsFolder)).shuffleGrouping("statistics:naiveBayes");
 		
 		//Perceptron
-		builder.setBolt("ozaBoostBolt:perceptron", new OzaBoostBolt("functions.Perceptron",FILTER_SET_SIZE)).shuffleGrouping("stringToWordBolt");
+		builder.setBolt("ozaBoostBolt:perceptron", new OzaBoostBolt("functions.Perceptron",FILTER_SET_SIZE, ONLINE_LEARNING)).shuffleGrouping("stringToWordBolt");
 		
 //		builder.setBolt("ozaBoostBolt:printer", new PrinterBolt()).shuffleGrouping("ozaBoostBolt:perceptron");
 		

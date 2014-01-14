@@ -1,4 +1,4 @@
-package stringToVector;
+package mailAnalyser;
 
 import java.util.Map;
 
@@ -81,7 +81,7 @@ public class StatisticsBolt extends BaseRichBolt {
 			stats[1][pred]++;	
 			
 			//Update Confusion Matrix
-			conf[actual][pred]++;
+			conf[pred][actual]++;
 			
 			totalCount++;
 			collector.ack(input);

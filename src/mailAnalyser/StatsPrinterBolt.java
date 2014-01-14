@@ -1,4 +1,4 @@
-package stringToVector;
+package mailAnalyser;
 
 import java.text.DecimalFormat;
 

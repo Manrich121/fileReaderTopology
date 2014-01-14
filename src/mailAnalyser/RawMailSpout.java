@@ -1,4 +1,4 @@
-package stringToVector;
+package mailAnalyser;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 

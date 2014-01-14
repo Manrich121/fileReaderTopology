@@ -1,4 +1,4 @@
-package stringToVector;
+package mailAnalyser;
 
 import moa.classifiers.Classifier;
 

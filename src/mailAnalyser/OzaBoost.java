@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package stringToVector;
+package mailAnalyser;
 
 import java.util.ArrayDeque;
 import java.util.Random;

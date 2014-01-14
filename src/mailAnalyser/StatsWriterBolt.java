@@ -1,4 +1,4 @@
-package stringToVector;
+package mailAnalyser;
 
 import java.io.File;
 import java.io.FileWriter;

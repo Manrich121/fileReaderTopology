@@ -1,4 +1,4 @@
-package stringToVector;
+package mailAnalyser;
 
 import java.util.Map;
 
@@ -30,16 +30,18 @@ public class OzaBoostBolt extends BaseRichBolt {
 	private OutputCollector collector;
 	private InstancesHeader INST_HEADERS;
 	private int MAX_LEARN_INST;
+	private boolean onlineLearn;
 	
 	private int count =0; 
 
 	private static final long serialVersionUID = 5699756297412652215L;
 	
-	public OzaBoostBolt(String classifierName, int maxLearnInstances){
+	public OzaBoostBolt(String classifierName, int maxLearnInstances, boolean learn){
 		classifier = new OzaBoost();
 		classifier.baseLearnerOption = new ClassOption("baseLearner", 'l',"Classifier to train.",Classifier.class, classifierName);
 		classifier.prepareForUse();
 		MAX_LEARN_INST = maxLearnInstances;
+		onlineLearn = learn;
 	}
 
 	@Override
@@ -67,7 +69,7 @@ public class OzaBoostBolt extends BaseRichBolt {
 				classifier.trainOnInstanceImpl(inst);
 				count++;
 			}else{ // Learn on Positive classification
-				if (correctClass(classifier.getVotesForInstance(inst),inst.classValue())){
+				if (onlineLearn || correctClass(classifier.getVotesForInstance(inst),inst.classValue())){
 					classifier.trainOnInstanceImpl(inst);
 				}
 			}
