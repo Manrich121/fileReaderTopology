@@ -65,12 +65,16 @@ public class OzaBoostBolt extends BaseRichBolt {
 			//Emit the entire prediction array and the correct value
 			collector.emit(new Values(classifier.getVotesForInstance(inst), inst.classValue(),label,input.getString(2)));
 			//Train on instance
-			if (count <MAX_LEARN_INST){			
+			if (onlineLearn){
 				classifier.trainOnInstanceImpl(inst);
-				count++;
-			}else{ // Learn on Positive classification
-				if (onlineLearn || correctClass(classifier.getVotesForInstance(inst),inst.classValue())){
+			}else{
+				if (count <MAX_LEARN_INST){			
 					classifier.trainOnInstanceImpl(inst);
+					count++;
+				}else{ // Learn on Positive classification
+					if (correctClass(classifier.getVotesForInstance(inst),inst.classValue())){
+						classifier.trainOnInstanceImpl(inst);
+					}
 				}
 			}
 		}		
